@@ -8,7 +8,7 @@ variable "aws_region" {
 variable "image_storage_bucket" {
   description = "Storage bucket for rock images (must be globally unique)"
   type        = string
-  default     = "your-unique-storage-bucket-name" 
+  default     = "tianas-unique-image-storing-bucket" 
 }
 
 variable "db_username" {
