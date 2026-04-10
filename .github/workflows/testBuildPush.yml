@@ -26,14 +26,10 @@ jobs:
         run: pip install pipenv
 
       - name: Install dependencies
-        run: pipenv install --dev --deploy
-        env:
-          PIPENV_VENV_IN_PROJECT: "1"
+        run: pipenv install
 
       - name: Run tests
         run: pipenv run python manage.py test
-        env:
-          PIPENV_VENV_IN_PROJECT: "1"
 
 
   build-and-push:
