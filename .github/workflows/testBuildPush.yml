@@ -64,12 +64,19 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve
 
+      - name: Read Terraform Outputs
+        id: tf_outputs
+        working-directory: terraform
+        run: |
+          echo "ecr_registry=$(terraform output -raw ecr_registry_url)" >> $GITHUB_OUTPUT
+          echo "ecr_repository=$(terraform output -raw ecr_repository)" >> $GITHUB_OUTPUT
+
       # ---------------- Docker Steps ----------------
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & push Docker image
         run: |
-          IMAGE="${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest"
+          IMAGE="${{ steps.tf_outputs.outputs.ecr_registry }}/${{ steps.tf_outputs.outputs.ecr_repository }}:latest"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
