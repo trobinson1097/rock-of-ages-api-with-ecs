@@ -68,8 +68,13 @@ jobs:
         id: tf_outputs
         working-directory: terraform
         run: |
-          echo "ecr_registry=$(terraform output -raw ecr_registry_url)" >> $GITHUB_OUTPUT
-          echo "ecr_repository=$(terraform output -raw ecr_repository)" >> $GITHUB_OUTPUT
+          set -euo pipefail
+
+          ECR_REGISTRY=$(terraform output -raw ecr_registry_url | tr -d '\r' | head -n 1)
+          ECR_REPOSITORY=$(terraform output -raw ecr_repository | tr -d '\r' | head -n 1)
+
+          echo "ecr_registry=$ECR_REGISTRY" >> "$GITHUB_OUTPUT"
+          echo "ecr_repository=$ECR_REPOSITORY" >> "$GITHUB_OUTPUT"
 
       # ---------------- Docker Steps ----------------
       - name: Log in to Amazon ECR
