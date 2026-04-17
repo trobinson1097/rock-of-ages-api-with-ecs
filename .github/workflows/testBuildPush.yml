@@ -55,6 +55,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
+          terraform_wrapper: false
 
       - name: Terraform Init
         working-directory: terraform
@@ -68,8 +69,10 @@ jobs:
         id: tf_outputs
         working-directory: terraform
         run: |
-          echo "ecr_registry=$(terraform output -raw ecr_registry_url)" >> $GITHUB_OUTPUT
-          echo "ecr_repository=$(terraform output -raw ecr_repository)" >> $GITHUB_OUTPUT
+          set -euo pipefail
+
+          echo "ecr_registry=$(terraform output -raw ecr_registry_url)" >> "$GITHUB_OUTPUT"
+          echo "ecr_repository=$(terraform output -raw ecr_repository)" >> "$GITHUB_OUTPUT"
 
       # ---------------- Docker Steps ----------------
       - name: Log in to Amazon ECR
