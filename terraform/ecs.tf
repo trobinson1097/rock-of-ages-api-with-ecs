@@ -22,6 +22,15 @@ resource "aws_ecs_task_definition" "api" {
       name      = "api"
       image     = "${aws_ecr_repository.api.repository_url}:latest"
       essential = true
+      
+      # health check addition
+       healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 60
+      }
 
       portMappings = [
         {
@@ -86,6 +95,11 @@ resource "aws_ecs_service" "api" {
   task_definition = aws_ecs_task_definition.api.arn
   desired_count   = 2  # Same as your 2 EC2 instances
   launch_type     = "FARGATE"
+
+  # Enabling Managed Tags
+  enable_ecs_managed_tags = true
+  propagate_tags          = "SERVICE"
+
 
   network_configuration {
     subnets          = data.aws_subnets.default.ids
