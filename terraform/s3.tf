@@ -1,29 +1,14 @@
 # -----------------------------
-# Create bucket for rock images
+# Reference existing image bucket (managed in backend repo)
 # -----------------------------
 
-resource "aws_s3_bucket" "images" {
-  bucket        = var.image_storage_bucket
-  force_destroy = true # optional: allows deleting bucket even if it has objects
-
-  tags = {
-    Name = "Rock of Ages Image Storage Bucket"
-  }
-}
-
-# Block all public access
-resource "aws_s3_bucket_public_access_block" "images" {
-  bucket = aws_s3_bucket.images.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+data "aws_s3_bucket" "images" {
+  bucket = var.image_storage_bucket
 }
 
 # CORS configuration (REQUIRED for presigned URL uploads from browser)
 resource "aws_s3_bucket_cors_configuration" "images" {
-  bucket = aws_s3_bucket.images.id
+  bucket = data.aws_s3_bucket.images.id
 
   cors_rule {
     allowed_headers = ["*"]
@@ -36,7 +21,7 @@ resource "aws_s3_bucket_cors_configuration" "images" {
 
 # Bucket policy allowing ECS task role
 resource "aws_s3_bucket_policy" "images" {
-  bucket = aws_s3_bucket.images.id
+  bucket = data.aws_s3_bucket.images.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -54,13 +39,10 @@ resource "aws_s3_bucket_policy" "images" {
           "s3:ListBucket"
         ]
         Resource = [
-          aws_s3_bucket.images.arn,
-          "${aws_s3_bucket.images.arn}/*"
+          data.aws_s3_bucket.images.arn,
+          "${data.aws_s3_bucket.images.arn}/*"
         ]
       }
     ]
   })
 }
-
-
-
