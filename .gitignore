@@ -169,3 +169,6 @@ memory-bank/
 .roomodes
 context_portal/
 memory-bank/
+
+terraform/.terraform.lock.hcl
+terraform/.terraform/
