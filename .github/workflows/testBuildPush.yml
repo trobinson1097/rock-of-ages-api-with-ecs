@@ -80,16 +80,15 @@ jobs:
             | grep -v "Warning" \
             | grep -v "^[│╵╷]" \
             | grep -v "^\s*$" \
-            | tail -1)
+            | head -1)
 
           ECR_REPO=$(terraform output -raw ecr_repository 2>&1 \
             | sed 's/\x1b\[[0-9;]*m//g' \
             | grep -v "Warning" \
             | grep -v "^[│╵╷]" \
             | grep -v "^\s*$" \
-            | tail -1)
+            | head -1)
 
-          # Debug: print what we captured
           echo "ECR_REGISTRY: ${ECR_REGISTRY}"
           echo "ECR_REPO: ${ECR_REPO}"
 
