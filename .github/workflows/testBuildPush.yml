@@ -69,7 +69,7 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve
 
-       - name: Read Terraform Outputs
+      - name: Read Terraform Outputs
         id: tf_outputs
         working-directory: terraform
         run: |
