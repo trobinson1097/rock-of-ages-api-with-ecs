@@ -54,7 +54,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: "latest"
+          terraform_version: "1.9.8"
           terraform_wrapper: false
 
       - name: Terraform Init
@@ -69,31 +69,14 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve
 
-      - name: Read Terraform Outputs
+       - name: Read Terraform Outputs
         id: tf_outputs
         working-directory: terraform
         run: |
           set -euo pipefail
 
-          ECR_REGISTRY=$(terraform output -raw ecr_registry_url 2>&1 \
-            | sed 's/\x1b\[[0-9;]*m//g' \
-            | grep -v "Warning" \
-            | grep -v "^[│╵╷]" \
-            | grep -v "^\s*$" \
-            | head -1)
-
-          ECR_REPO=$(terraform output -raw ecr_repository 2>&1 \
-            | sed 's/\x1b\[[0-9;]*m//g' \
-            | grep -v "Warning" \
-            | grep -v "^[│╵╷]" \
-            | grep -v "^\s*$" \
-            | head -1)
-
-          echo "ECR_REGISTRY: ${ECR_REGISTRY}"
-          echo "ECR_REPO: ${ECR_REPO}"
-
-          echo "ecr_registry=${ECR_REGISTRY}" >> "$GITHUB_OUTPUT"
-          echo "ecr_repository=${ECR_REPO}" >> "$GITHUB_OUTPUT"
+          echo "ecr_registry=$(terraform output -raw ecr_registry_url)" >> "$GITHUB_OUTPUT"
+          echo "ecr_repository=$(terraform output -raw ecr_repository)" >> "$GITHUB_OUTPUT"
 
       # ---------------- Docker Steps ----------------
       - name: Log in to Amazon ECR
